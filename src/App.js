@@ -2,7 +2,6 @@
 import React, { useState, useEffect } from 'react';
 import Chat from './components/Chat';
 import TextEditor from './components/TextEditor';
-import CommentThread from './components/CommentThread';
 
 function App() {
   const [editorContent, setEditorContent] = useState('');
@@ -24,7 +23,6 @@ function App() {
     <div className="bg-gray-100 h-screen flex">
       <Chat editorContent={editorContent} />
       <TextEditor content={editorContent} onContentChange={handleEditorChange} />
-      <CommentThread />
     </div>
   );
 }

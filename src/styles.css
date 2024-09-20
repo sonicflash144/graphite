@@ -36,3 +36,10 @@ body {
     border-radius: 5px;
     resize: none;
 }
+.main-textarea {
+    padding: 10px;
+    outline: none;
+}
+.resize-none {
+    resize: none;
+}
