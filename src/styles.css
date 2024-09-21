@@ -38,7 +38,9 @@ body {
 }
 .main-textarea {
     padding: 10px;
+    height: 90%;
     outline: none;
+    overflow-y: auto;
 }
 .resize-none {
     resize: none;
