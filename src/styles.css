@@ -8,12 +8,12 @@ body {
     max-width: 70%;
 }
 .user-message {
-    background-color: #e3f2fd;
+    background-color: #f1f1f1;
     align-self: flex-end;
     margin-left: auto;
 }
 .assistant-message {
-    background-color: #f1f1f1;
+    background-color: #e7f0fe;
     align-self: flex-start;
 }
 #chat-container {
@@ -28,7 +28,7 @@ body {
     flex-direction: column;
     padding: 10px;
 }
-#chat-input {
+#chat-input, #thread-input {
     margin-top: auto;
     width: 100%;
     padding: 10px;
@@ -44,4 +44,12 @@ body {
 }
 .resize-none {
     resize: none;
+}
+.hovered-suggestion {
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
+    transform: translateY(-2px);
+    transition: all 0.15s ease;
+  }
+.cursor-not-allowed {
+  cursor: not-allowed;
 }

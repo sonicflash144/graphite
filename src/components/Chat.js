@@ -1,14 +1,26 @@
-// src/components/Chat.js
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import Suggestion from './Suggestion';
+import clearIcon from './icons/clearchat.svg';
 
-function Chat({ editorContent }) {
+function Chat({ editorContent, onApplySuggestion, onOpenThread, onSuggestionHover, onSuggestionLeave, onDismissSuggestion, hoveredSuggestion, suggestionStatuses }) {
   const [chatHistory, setChatHistory] = useState([]);
   const [message, setMessage] = useState('');
+  const messageContainerRef = useRef(null);
 
   useEffect(() => {
-    setChatHistory(initialChatHistory(editorContent));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [editorContent]);
+    const savedChatHistory = localStorage.getItem('chatHistory');
+    if (savedChatHistory) {
+      setChatHistory(JSON.parse(savedChatHistory));
+    } else {
+      setChatHistory(initialChatHistory(editorContent));
+    }
+  }, [editorContent, suggestionStatuses]);
+
+  useEffect(() => {
+    if (messageContainerRef.current) {
+      messageContainerRef.current.scrollTop = messageContainerRef.current.scrollHeight;
+    }
+  }, [chatHistory]);
 
   const initialChatHistory = (textContent) => [
     { role: 'system', content: `Here is the user's text:\n\n${textContent}` },
@@ -19,12 +31,27 @@ function Chat({ editorContent }) {
     },
   ];
 
+  const assignIdsToSuggestions = (data) => {
+    if (data.comments) {
+      return {
+        ...data,
+        comments: data.comments.map((comment) => ({
+          ...comment,
+          id: Date.now() + Math.random(),
+        })),
+      };
+    }
+    return data;
+  };
+
   const handleSendMessage = async () => {
     if (message.trim() === '') return;
 
     const newChatHistory = [...chatHistory, { role: 'user', content: message }];
     setChatHistory(newChatHistory);
     setMessage('');
+
+    localStorage.setItem('chatHistory', JSON.stringify(newChatHistory));
 
     try {
       const response = await fetch('http://localhost:5000/chat', {
@@ -36,8 +63,10 @@ function Chat({ editorContent }) {
       if (data.error) {
         console.error('Error:', data.error);
       } else {
-        const aiResponse = JSON.stringify(data);
-        setChatHistory((prev) => [...prev, { role: 'assistant', content: aiResponse }]);
+        const dataWithIds = assignIdsToSuggestions(data);
+        const updatedChatHistory = [...newChatHistory, { role: 'assistant', content: dataWithIds }];
+        setChatHistory(updatedChatHistory);
+        localStorage.setItem('chatHistory', JSON.stringify(updatedChatHistory));
       }
     } catch (error) {
       console.error('Error:', error);
@@ -50,16 +79,49 @@ function Chat({ editorContent }) {
     }
   };
 
+  const clearLocalStorage = () => {
+    localStorage.removeItem('chatHistory');
+    localStorage.removeItem('suggestion_statuses');
+    setChatHistory(initialChatHistory(editorContent));
+  };
+
+  const renderMessage = (msg) => {
+    if (msg.role === 'assistant' && msg.content.comments) {
+      return (
+        <div className="suggestions-container">
+          {msg.content.comments.map((comment) => (
+            <Suggestion
+              key={comment.id}
+              suggestion={comment}
+              onHover={onSuggestionHover}
+              onLeave={onSuggestionLeave}
+              onAccept={onApplySuggestion}
+              onDismiss={onDismissSuggestion}
+              onOpenThread={onOpenThread}
+              isHovered={hoveredSuggestion === comment && hoveredSuggestion.id === comment.id}
+              editorContent={editorContent}
+              isThreadView={false}
+            />
+          ))}
+        </div>
+      );
+    }
+    return <div className={`chat-bubble ${msg.role}-message`}>{msg.content}</div>;
+  };
+
   return (
     <div className="w-1/4 bg-white p-4 border-r border-gray-300 flex flex-col">
-      <h2 className="text-xl font-bold mb-4">Main Chat</h2>
-      <div className="flex-grow overflow-y-auto" id="message-container">
+      <div className="flex mb-4">
+        <h2 className="text-xl font-bold mr-4">Chat</h2>
+        <button onClick={clearLocalStorage}>
+          <img src={clearIcon} alt="Clear Chat" />
+        </button>
+      </div>
+      <div ref={messageContainerRef} className="flex-grow overflow-y-auto" id="message-container">
         {chatHistory
           .filter((msg) => msg.role !== 'system')
           .map((msg, index) => (
-            <div key={index} className={`chat-bubble ${msg.role}-message`}>
-              {msg.content}
-            </div>
+            <div key={index}>{renderMessage(msg)}</div>
           ))}
       </div>
       <div className="mt-4">

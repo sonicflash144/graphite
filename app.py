@@ -24,6 +24,10 @@ def chat():
     data = request.json
     messages = data.get('messages')
 
+    for message in messages:
+        if message.get('role') == 'assistant' and isinstance(message.get('content'), dict):
+            message['content'] = str(message['content'])
+
     if not messages:
         return jsonify({"error": "Messages are required"}), 400
 
