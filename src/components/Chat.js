@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import Suggestion from './Suggestion';
 import clearIcon from './icons/clearchat.svg';
 import settingsIcon from './icons/settings.svg';
-const chatUrl = "https://graphite-clone-0785836f9ec8.herokuapp.com/chat";
+const chatUrl = process.env.HEROKU_URL;
 
 function Chat({ editorContent, userPrompt, openSettings, clearStorage, onOpenThread, onSuggestionHover, onSuggestionLeave, onApplySuggestion, onDismissSuggestion, hoveredSuggestion, suggestionStatuses }) {
   const [chatHistory, setChatHistory] = useState([]);
