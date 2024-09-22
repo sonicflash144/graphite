@@ -6,6 +6,7 @@ body {
     padding: 10px;
     margin: 5px 0;
     max-width: 70%;
+    width: fit-content;
 }
 .user-message {
     background-color: #f1f1f1;
@@ -52,4 +53,7 @@ body {
   }
 .cursor-not-allowed {
   cursor: not-allowed;
+}
+.no-select {
+  user-select: none;
 }

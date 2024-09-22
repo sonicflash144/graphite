@@ -16,32 +16,45 @@ class Comment(BaseModel):
     type: str = Field(..., description="Must be one of: 'REPLACE', 'ADD_BEFORE', 'ADD_AFTER', 'REMOVE', 'QUESTION'")
     text: str
 
-class CommentList(BaseModel):
+class Response(BaseModel):
+    chat_text: str = Field(..., description="Conversational reply to the user's message, ex. 'Sure, I can help with that.'")
     comments: list[Comment]
 
 @app.route('/chat', methods=['POST'])
 def chat():
     data = request.json
     messages = data.get('messages')
-
-    for message in messages:
-        if message.get('role') == 'assistant' and isinstance(message.get('content'), dict):
-            message['content'] = str(message['content'])
+    for i, message in enumerate(messages):
+        if message.get('role') == 'assistant':
+            content = message.get('content', {})
+            comments = content.get('comments', [])
+            for comment in comments:
+                if comment.get('type') == 'THREAD-STARTER':
+                    messages[i] = {
+                        'role': 'system',
+                        'content': f"Focus your response on this part of the text: {comment.get('anchor')}"
+                    }
+                    break
+    messages = [
+        {**message, 'content': str(message['content'])} if message.get('role') == 'assistant' and isinstance(message.get('content'), dict) else message
+        for message in messages
+    ]
+    print(messages)
 
     if not messages:
         return jsonify({"error": "Messages are required"}), 400
 
     completion = client.beta.chat.completions.parse(
-        model="gpt-4o-mini",
+        model="gpt-4o-2024-08-06",
         messages=messages,
-        response_format=CommentList,
+        response_format=Response,
     )
 
     response = completion.choices[0].message
     if response.refusal:
         return jsonify({"refusal": response.refusal}), 200
     else:
-        print(response.parsed.dict())
+        #print(response.parsed.dict())
         return jsonify(response.parsed.dict()), 200
 
 if __name__ == '__main__':

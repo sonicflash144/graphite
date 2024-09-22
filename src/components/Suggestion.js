@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React from 'react';
 import replaceIcon from './icons/replace.svg';
 import addIcon from './icons/add.svg';
 import deleteIcon from './icons/delete.svg';
@@ -30,24 +30,14 @@ const suggestionTypeMap = {
   },
 };
 
-function Suggestion({ suggestion, suggestionStatuses, onHover, onLeave, onAccept, onDismiss, onOpenThread, isHovered, editorContent, isThreadView }) {
-  const [status, setStatus] = useState(null);
-  const { type, anchor, text } = suggestion;
-  const { icon, title } = suggestionTypeMap[type];
+function Suggestion({ suggestion, status, onHover, onLeave, onAccept, onDismiss, onOpenThread, isHovered, editorContent, isThreadView }) {
 
+  const { type, anchor, text } = suggestion;
+  const { icon, title } = type === 'THREAD-STARTER' ? { icon: null, title: null } : suggestionTypeMap[type];
   const greyStyle = { color: 'grey' };
   const blackStyle = { color: 'black', fontWeight: 'bold' };
   const italicStyle = { fontWeight: 'bold', fontStyle: 'italic' };
   const isAnchorPresent = editorContent.includes(suggestion.anchor);
-
-  const getSuggestionStatus = useCallback((suggestionId) => {
-    const _suggestion = suggestionStatuses.find(item => item.id === suggestionId);
-    return _suggestion ? _suggestion.status : null;
-  }, [suggestionStatuses]);
-
-  useEffect(() => {
-    setStatus(getSuggestionStatus(suggestion.id));
-  }, [suggestionStatuses, suggestion, getSuggestionStatus]);
 
   const renderSuggestionContent = () => {
     switch (type) {
@@ -82,13 +72,15 @@ function Suggestion({ suggestion, suggestionStatuses, onHover, onLeave, onAccept
             <span style={italicStyle}>{text}</span>
           </>
         );
+      case 'THREAD-STARTER':
+        return <blockquote style={greyStyle}>{anchor}</blockquote>;
       default:
         return null;
     }
   };
 
   const divStyle = {
-    backgroundColor: type === 'QUESTION' ? '#f4e7fe' : '#e7f0fe',
+    backgroundColor: type === 'THREAD-STARTER' ? '#f4e7fe' : '#e7f0fe',
     borderRadius: '1rem',
     display: 'flex',
     flexDirection: 'column',
@@ -98,12 +90,10 @@ function Suggestion({ suggestion, suggestionStatuses, onHover, onLeave, onAccept
   };
 
   const handleAccept = () => {
-    setStatus('accepted');
     onAccept(suggestion);
   };
 
   const handleDismiss = () => {
-    setStatus('dismissed');
     onDismiss(suggestion);
   };
 
@@ -114,59 +104,62 @@ function Suggestion({ suggestion, suggestionStatuses, onHover, onLeave, onAccept
   return (
     <div
       style={divStyle}
-      onMouseEnter={status == null ? () => onHover(suggestion) : null}
+      onMouseEnter={isAnchorPresent && status == null ? () => onHover(suggestion) : null}      
       onMouseLeave={status == null ? onLeave : null}
       className={isHovered ? 'hovered-suggestion' : ''}
     >
-      <span className="text-dim font-light flex items-center justify-between" style={{ color: 'grey', width: '100%', height: '24px' }}>
-        <div className="flex items-center">
-          <img src={icon} alt={title} className="icon-class mr-1" />
-          {title}
-          {status && (
-            <span className={`text-white rounded-full px-2 ml-2 ${status === 'accepted' ? 'bg-blue-500' : 'bg-gray-400'}`}>
-              {status === 'accepted' ? 'Accepted' : 'Dismissed'}
-            </span>
+      {type !== 'THREAD-STARTER' && (
+        <span className="text-gray-500 font-light flex items-center justify-between w-full h-6">
+          <div className="no-select flex items-center">
+            <img src={icon} alt={title} className="icon-class mr-1" />
+            {title}
+            {status && (
+              <span className={`text-white rounded-full px-2 ml-2 ${status === 'accepted' ? 'bg-blue-500' : 'bg-gray-400'}`}>
+                {status === 'accepted' ? 'Accepted' : 'Dismissed'}
+              </span>
+            )}
+          </div>
+          {!isThreadView && isHovered && (
+            <button className="ml-auto bg-blue-500 hover:bg-blue-700 text-white px-2 py-1 rounded-full flex items-center no-select" onClick={handleOpenThread}>
+              <img src={threadIcon} alt={title} className="icon-class ml-1" />
+            </button>
           )}
-        </div>
-        {!isThreadView && isHovered && (
-          <button className="ml-auto bg-blue-500 hover:bg-blue-700 text-white px-2 py-1 rounded-full flex items-center" onClick={handleOpenThread}>
-            <span>Open Thread</span>
-            <img src={threadIcon} alt={title} className="icon-class ml-1" />
-          </button>
-        )}
-      </span>
+        </span>
+      )}
       <span className="text-left ml-1">
         {renderSuggestionContent()}
       </span>
-      <div style={{ display: 'flex', alignItems: 'center' }}>
-        {!status && (
-          <>
-            {type !== 'QUESTION' && (
-              <>
-                {isAnchorPresent ? (
-                  <button
-                    className="bg-blue-500 hover:bg-blue-700 text-white rounded-full py-1 px-3 mr-2"
-                    onClick={handleAccept}
-                  >
-                    Accept
-                  </button>
-                ) : (
-                  <button className="bg-gray-400 text-white rounded-full py-1 px-3 mr-2 cursor-not-allowed flex items-center" disabled={true}>
-                    <img src={alertIcon} alt="Alert Icon" className="icon-class mr-1" />
-                    <span>Missing Anchor</span>
-                  </button>
-                )}
-              </>
-            )}
-            <button 
-              className="text-[#878787]"
-              onClick={handleDismiss}
-            >
-              Dismiss
-            </button>
-          </>
-        )}
-      </div>
+      {type !== 'THREAD-STARTER' && (
+        <div className="no-select flex items-center">
+          {!status && (
+            <>
+              {type !== 'QUESTION' && (
+                <>
+                  {isAnchorPresent ? (
+                    <button
+                      className="bg-blue-500 hover:bg-blue-700 text-white rounded-full py-1 px-3 mr-2"
+                      onClick={handleAccept}
+                    >
+                      Accept
+                    </button>
+                  ) : (
+                    <button className="bg-gray-400 text-white rounded-full py-1 px-3 mr-2 cursor-not-allowed flex items-center" disabled={true}>
+                      <img src={alertIcon} alt="Alert Icon" className="icon-class mr-1" />
+                      <span>Missing Anchor</span>
+                    </button>
+                  )}
+                </>
+              )}
+              <button 
+                className="text-[#878787]"
+                onClick={handleDismiss}
+              >
+                Dismiss
+              </button>
+            </>
+          )}
+        </div>
+      )}
     </div>
   );
 }
