@@ -3,7 +3,7 @@ import Suggestion from './Suggestion';
 import closeIcon from './icons/close.svg';
 import '../styles.css';
 
-function Thread({ suggestion, onClose, editorContent, onApplySuggestion, onSuggestionHover, onSuggestionLeave, onDismissSuggestion, hoveredSuggestion, suggestionStatuses }) {
+function Thread({ suggestion, onClose, editorContent, onSuggestionHover, onSuggestionLeave, onApplySuggestion, onDismissSuggestion, hoveredSuggestion, suggestionStatuses }) {
   const [threadHistory, setThreadHistory] = useState([]);
   const [message, setMessage] = useState('');
   const messageContainerRef = useRef(null);
@@ -12,7 +12,7 @@ function Thread({ suggestion, onClose, editorContent, onApplySuggestion, onSugge
     if (messageContainerRef.current) {
       messageContainerRef.current.scrollTop = messageContainerRef.current.scrollHeight;
     }
-  }, [threadHistory, suggestionStatuses]);
+  }, [threadHistory]);
 
   useEffect(() => {
     // Initialize thread with the suggestion as the first message
@@ -20,6 +20,19 @@ function Thread({ suggestion, onClose, editorContent, onApplySuggestion, onSugge
       { role: 'assistant', content: { comments: [suggestion] } }
     ]);
   }, [suggestion]);
+
+  const assignIdsToSuggestions = (data) => {
+    if (data.comments) {
+      return {
+        ...data,
+        comments: data.comments.map((comment) => ({
+          ...comment,
+          id: Date.now() + Math.random(),
+        })),
+      };
+    }
+    return data;
+  };
 
   const handleSendMessage = async () => {
     if (message.trim() === '') return;
@@ -38,7 +51,8 @@ function Thread({ suggestion, onClose, editorContent, onApplySuggestion, onSugge
       if (data.error) {
         console.error('Error:', data.error);
       } else {
-        const updatedThreadHistory = [...newThreadHistory, { role: 'assistant', content: data }];
+        const dataWithIds = assignIdsToSuggestions(data);
+        const updatedThreadHistory = [...newThreadHistory, { role: 'assistant', content: dataWithIds }];
         setThreadHistory(updatedThreadHistory);
       }
     } catch (error) {
@@ -54,19 +68,24 @@ function Thread({ suggestion, onClose, editorContent, onApplySuggestion, onSugge
 
   const renderMessage = (msg) => {
     if (msg.role === 'assistant' && msg.content.comments) {
-      return msg.content.comments.map((comment, index) => (
-        <Suggestion
-          key={index}
-          suggestion={comment}
-          onHover={onSuggestionHover}
-          onLeave={onSuggestionLeave}
-          onAccept={onApplySuggestion}
-          onDismiss={onDismissSuggestion}
-          isHovered={hoveredSuggestion === comment && hoveredSuggestion.id === comment.id}
-          editorContent={editorContent}
-          isThreadView={true}
-        />
-      ));
+      return (
+        <div className="suggestions-container">
+          {msg.content.comments.map((comment) => (
+            <Suggestion
+              key={comment.id}
+              suggestion={comment}
+              suggestionStatuses={suggestionStatuses}
+              onHover={onSuggestionHover}
+              onLeave={onSuggestionLeave}
+              onAccept={onApplySuggestion}
+              onDismiss={onDismissSuggestion}
+              isHovered={hoveredSuggestion === comment && hoveredSuggestion.id === comment.id}
+              editorContent={editorContent}
+              isThreadView={true}
+            />
+          ))}
+        </div>
+      );
     }
     return <div className={`chat-bubble ${msg.role}-message`}>{msg.content}</div>;
   };

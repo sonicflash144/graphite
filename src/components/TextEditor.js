@@ -104,14 +104,14 @@ function TextEditor({ content, onContentChange, previewSuggestion }) {
     <div className="relative w-1/2">
       {!previewSuggestion?.type ? (
         <textarea
-          className="w-full h-[95%] resize-none rounded-xl focus:outline-none p-5 text-[18px] px-5 transparent-scrollbar bg-transparent"
+          className="w-full h-[95%] resize-none rounded-xl focus:outline-none p-5 text-[18px] px-7 transparent-scrollbar bg-transparent"
           value={content}
           onChange={handleContentChange}
           placeholder="Start writing here..."
         />
       ) : (
         <div
-          className="w-full h-full resize-none rounded-xl focus:outline-none p-5 px-5 absolute top-0 left-0 overflow-y-auto pointer-events-none z-1 bg-surface text-[18px] transparent-scrollbar"
+          className="w-full h-full resize-none rounded-xl focus:outline-none p-5 px-7 absolute top-0 left-0 overflow-y-auto pointer-events-none z-1 bg-surface text-[18px] transparent-scrollbar"
           style={{
             whiteSpace: 'pre-wrap',
             wordWrap: 'break-word',

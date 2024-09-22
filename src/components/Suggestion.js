@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import replaceIcon from './icons/replace.svg';
 import addIcon from './icons/add.svg';
 import deleteIcon from './icons/delete.svg';
@@ -30,18 +30,8 @@ const suggestionTypeMap = {
   },
 };
 
-const getSuggestionStatus = (suggestionId) => {
-  const suggestionStatuses = JSON.parse(localStorage.getItem('suggestion_statuses')) || [];
-  const suggestion = suggestionStatuses.find(item => item.id === suggestionId);
-  console.log('Suggestion status:', suggestion);
-  return suggestion ? suggestion.status : null;
-};
-
-function Suggestion({ suggestion, onHover, onLeave, onAccept, onDismiss, onOpenThread, isHovered, editorContent, isThreadView }) {
-  const [status, setStatus] = useState(() => {
-    const savedStatus = getSuggestionStatus(suggestion.id);
-    return savedStatus ? savedStatus : null;
-  });
+function Suggestion({ suggestion, suggestionStatuses, onHover, onLeave, onAccept, onDismiss, onOpenThread, isHovered, editorContent, isThreadView }) {
+  const [status, setStatus] = useState(null);
   const { type, anchor, text } = suggestion;
   const { icon, title } = suggestionTypeMap[type];
 
@@ -49,6 +39,15 @@ function Suggestion({ suggestion, onHover, onLeave, onAccept, onDismiss, onOpenT
   const blackStyle = { color: 'black', fontWeight: 'bold' };
   const italicStyle = { fontWeight: 'bold', fontStyle: 'italic' };
   const isAnchorPresent = editorContent.includes(suggestion.anchor);
+
+  const getSuggestionStatus = useCallback((suggestionId) => {
+    const _suggestion = suggestionStatuses.find(item => item.id === suggestionId);
+    return _suggestion ? _suggestion.status : null;
+  }, [suggestionStatuses]);
+
+  useEffect(() => {
+    setStatus(getSuggestionStatus(suggestion.id));
+  }, [suggestionStatuses, suggestion, getSuggestionStatus]);
 
   const renderSuggestionContent = () => {
     switch (type) {

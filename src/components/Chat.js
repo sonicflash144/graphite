@@ -2,10 +2,16 @@ import React, { useState, useEffect, useRef } from 'react';
 import Suggestion from './Suggestion';
 import clearIcon from './icons/clearchat.svg';
 
-function Chat({ editorContent, onApplySuggestion, onOpenThread, onSuggestionHover, onSuggestionLeave, onDismissSuggestion, hoveredSuggestion, suggestionStatuses }) {
+function Chat({ editorContent, clearStorage, onOpenThread, onSuggestionHover, onSuggestionLeave, onApplySuggestion, onDismissSuggestion, hoveredSuggestion, suggestionStatuses }) {
   const [chatHistory, setChatHistory] = useState([]);
   const [message, setMessage] = useState('');
   const messageContainerRef = useRef(null);
+  
+  useEffect(() => {
+    if (messageContainerRef.current) {
+      messageContainerRef.current.scrollTop = messageContainerRef.current.scrollHeight;
+    }
+  }, [chatHistory]);
 
   useEffect(() => {
     const savedChatHistory = localStorage.getItem('chatHistory');
@@ -14,13 +20,7 @@ function Chat({ editorContent, onApplySuggestion, onOpenThread, onSuggestionHove
     } else {
       setChatHistory(initialChatHistory(editorContent));
     }
-  }, [editorContent, suggestionStatuses]);
-
-  useEffect(() => {
-    if (messageContainerRef.current) {
-      messageContainerRef.current.scrollTop = messageContainerRef.current.scrollHeight;
-    }
-  }, [chatHistory]);
+  }, [editorContent]);
 
   const initialChatHistory = (textContent) => [
     { role: 'system', content: `Here is the user's text:\n\n${textContent}` },
@@ -79,11 +79,10 @@ function Chat({ editorContent, onApplySuggestion, onOpenThread, onSuggestionHove
     }
   };
 
-  const clearLocalStorage = () => {
-    localStorage.removeItem('chatHistory');
-    localStorage.removeItem('suggestion_statuses');
+  const clearChat = () => {
     setChatHistory(initialChatHistory(editorContent));
-  };
+    clearStorage();
+  }
 
   const renderMessage = (msg) => {
     if (msg.role === 'assistant' && msg.content.comments) {
@@ -93,6 +92,7 @@ function Chat({ editorContent, onApplySuggestion, onOpenThread, onSuggestionHove
             <Suggestion
               key={comment.id}
               suggestion={comment}
+              suggestionStatuses={suggestionStatuses}
               onHover={onSuggestionHover}
               onLeave={onSuggestionLeave}
               onAccept={onApplySuggestion}
@@ -113,7 +113,7 @@ function Chat({ editorContent, onApplySuggestion, onOpenThread, onSuggestionHove
     <div className="w-1/4 bg-white p-4 border-r border-gray-300 flex flex-col">
       <div className="flex mb-4">
         <h2 className="text-xl font-bold mr-4">Chat</h2>
-        <button onClick={clearLocalStorage}>
+        <button onClick={clearChat}>
           <img src={clearIcon} alt="Clear Chat" />
         </button>
       </div>

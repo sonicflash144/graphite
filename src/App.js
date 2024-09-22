@@ -11,7 +11,6 @@ function App() {
   const [hoveredSuggestion, setHoveredSuggestion] = useState(null);
   const [suggestionStatuses, setSuggestionStatuses] = useState([]);
 
-  // Load content from local storage on mount
   useEffect(() => {
     const savedContent = localStorage.getItem('textEditorContent');
     if (savedContent) {
@@ -24,15 +23,16 @@ function App() {
     localStorage.setItem('textEditorContent', content);
   };
 
+  const clearStorage = () => {
+    localStorage.removeItem('chatHistory');
+    localStorage.removeItem('suggestion_statuses');
+    handleCloseThread();
+  };
+
   const applySuggestion = (suggestion) => {
     let newContent = editorContent;
     const { type, anchor, text } = suggestion;
     const anchorIndex = newContent.indexOf(anchor);
-
-    if (anchorIndex === -1) {
-      console.error('Anchor text not found in editor content');
-      return;
-    }
 
     switch (type) {
       case 'REPLACE':
@@ -112,11 +112,11 @@ function App() {
     <div className="bg-gray-100 h-screen flex">
       <Chat 
         editorContent={editorContent} 
-        setPreviewSuggestion={setPreviewSuggestion}
-        onApplySuggestion={handleAcceptSuggestion}
+        clearStorage={clearStorage}
         onOpenThread={handleOpenThread}
         onSuggestionHover={handleSuggestionHover}
         onSuggestionLeave={handleSuggestionLeave}
+        onApplySuggestion={handleAcceptSuggestion}
         onDismissSuggestion={handleDismissSuggestion}
         hoveredSuggestion={hoveredSuggestion}
         suggestionStatuses={suggestionStatuses}
@@ -131,10 +131,9 @@ function App() {
           editorContent={editorContent}
           suggestion={activeThread}
           onClose={handleCloseThread}
-          setPreviewSuggestion={setPreviewSuggestion}
-          onApplySuggestion={handleAcceptSuggestion}
           onSuggestionHover={handleSuggestionHover}
           onSuggestionLeave={handleSuggestionLeave}
+          onApplySuggestion={handleAcceptSuggestion}
           onDismissSuggestion={handleDismissSuggestion}
           hoveredSuggestion={hoveredSuggestion}
           suggestionStatuses={suggestionStatuses}
