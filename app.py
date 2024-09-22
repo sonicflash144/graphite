@@ -9,7 +9,7 @@ api_key = os.getenv("OPENAI_API_KEY")
 client = OpenAI(api_key=api_key)
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, origins=["http://localhost:3000", "https://gptforwriters.vercel.app"])
 
 class Comment(BaseModel):
     anchor: str = Field(..., description="Must be verbatim and unique from the entire text")
