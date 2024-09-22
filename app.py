@@ -9,7 +9,7 @@ api_key = os.getenv("OPENAI_API_KEY")
 client = OpenAI(api_key=api_key)
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, resources={r"/chat": {"origins": "https://gptforwriters.vercel.app"}})
 
 class Comment(BaseModel):
     anchor: str = Field(..., description="Must be verbatim and unique from the entire text")
@@ -20,8 +20,10 @@ class Response(BaseModel):
     chat_text: str = Field(..., description="Conversational reply to the user's message, ex. 'Sure, I can help with that.'")
     comments: list[Comment]
 
-@app.route('/chat', methods=['POST'])
+@app.route('/chat', methods=['POST', 'OPTIONS'])
 def chat():
+    if request.method == 'OPTIONS':
+        return '', 204
     data = request.json
     messages = data.get('messages')
     for i, message in enumerate(messages):
@@ -54,7 +56,6 @@ def chat():
     if response.refusal:
         return jsonify({"refusal": response.refusal}), 200
     else:
-        #print(response.parsed.dict())
         return jsonify(response.parsed.dict()), 200
 
 if __name__ == '__main__':
