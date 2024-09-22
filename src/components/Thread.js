@@ -2,7 +2,6 @@ import React, { useState, useEffect, useRef } from 'react';
 import Suggestion from './Suggestion';
 import closeIcon from './icons/close.svg';
 import '../styles.css';
-const chatUrl = process.env.HEROKU_URL;
 
 function Thread({ editorContent, userPrompt, suggestion, onClose, onSuggestionHover, onSuggestionLeave, onApplySuggestion, onDismissSuggestion, hoveredSuggestion, suggestionStatuses }) {
   const [threadHistory, setThreadHistory] = useState([]);
@@ -93,7 +92,7 @@ function Thread({ editorContent, userPrompt, suggestion, onClose, onSuggestionHo
     localStorage.setItem('threadHistory', JSON.stringify(newThreadHistory));
 
     try {
-      const response = await fetch(chatUrl, {
+      const response = await fetch("https://graphite-clone-0785836f9ec8.herokuapp.com/chat", {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ messages: newThreadHistory }),
