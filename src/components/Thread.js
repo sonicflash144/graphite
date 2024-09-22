@@ -2,6 +2,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import Suggestion from './Suggestion';
 import closeIcon from './icons/close.svg';
 import '../styles.css';
+require('dotenv').config();
+const chatUrl = process.env.HEROKU_URL;
 
 function Thread({ editorContent, userPrompt, suggestion, onClose, onSuggestionHover, onSuggestionLeave, onApplySuggestion, onDismissSuggestion, hoveredSuggestion, suggestionStatuses }) {
   const [threadHistory, setThreadHistory] = useState([]);

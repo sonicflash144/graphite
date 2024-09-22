@@ -2,8 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import Suggestion from './Suggestion';
 import clearIcon from './icons/clearchat.svg';
 import settingsIcon from './icons/settings.svg';
-import dotenv from 'dotenv';
-dotenv.config();
+require('dotenv').config();
 const chatUrl = process.env.HEROKU_URL;
 
 function Chat({ editorContent, userPrompt, openSettings, clearStorage, onOpenThread, onSuggestionHover, onSuggestionLeave, onApplySuggestion, onDismissSuggestion, hoveredSuggestion, suggestionStatuses }) {
