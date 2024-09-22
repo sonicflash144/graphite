@@ -2,7 +2,6 @@ import React, { useState, useEffect, useRef } from 'react';
 import Suggestion from './Suggestion';
 import clearIcon from './icons/clearchat.svg';
 import settingsIcon from './icons/settings.svg';
-const chatUrl = process.env.HEROKU_URL;
 
 function Chat({ editorContent, userPrompt, openSettings, clearStorage, onOpenThread, onSuggestionHover, onSuggestionLeave, onApplySuggestion, onDismissSuggestion, hoveredSuggestion, suggestionStatuses }) {
   const [chatHistory, setChatHistory] = useState([]);
@@ -78,9 +77,9 @@ function Chat({ editorContent, userPrompt, openSettings, clearStorage, onOpenThr
     setMessage('');
 
     localStorage.setItem('chatHistory', JSON.stringify(newChatHistory));
-
     try {
-      const response = await fetch(chatUrl, {
+      console.log(`${process.env.HEROKU_URL}/chat`);
+      const response = await fetch(`${process.env.HEROKU_URL}/chat`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ messages: newChatHistory }),
