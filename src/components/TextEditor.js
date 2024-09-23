@@ -164,7 +164,7 @@ function TextEditor({ content, onContentChange, previewSuggestion, onOpenThread 
         </div>
       ) : (
         <div
-          className="w-full h-[90%] resize-none rounded-xl focus:outline-none p-5 px-7 pointer-events-none bg-transparent text-[18px] transparent-scrollbar"
+          className="w-full h-[90%] rounded-xl p-5 px-7 pointer-events-none bg-transparent text-[18px] transparent-scrollbar overflow-y-auto"
           style={{
             whiteSpace: 'pre-wrap',
             wordWrap: 'break-word',
