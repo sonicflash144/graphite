@@ -149,7 +149,7 @@ function Chat({ editorContent, userPrompt, openSettings, clearStorage, onOpenThr
   };
 
   return (
-    <div className="w-1/4 bg-white p-4 border-r border-gray-300 flex flex-col">
+    <div className="w-1/4 bg-white p-4 border-r border-gray-300 flex flex-col shrink-0">
       <div className="flex mb-4 justify-between items-center no-select">
         <div className="flex items-center">
           <h2 className="text-xl font-bold mr-4">Chat</h2>

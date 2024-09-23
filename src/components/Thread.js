@@ -159,7 +159,7 @@ function Thread({ editorContent, userPrompt, suggestion, onClose, onSuggestionHo
   };
 
   return (
-    <div className="w-1/4 bg-white p-4 border-l border-gray-300 flex flex-col">
+    <div className="w-1/4 bg-white p-4 border-l border-gray-300 flex flex-col shrink-0">
       <div className="flex justify-between mb-4 no-select">
         <h2 className="text-xl font-bold">Thread</h2>
         <button onClick={handleClose} className="text-gray-500 hover:text-gray-700">
