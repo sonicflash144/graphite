@@ -92,7 +92,7 @@ function Thread({ editorContent, userPrompt, suggestion, onClose, onSuggestionHo
     localStorage.setItem('threadHistory', JSON.stringify(newThreadHistory));
 
     try {
-      const response = await fetch("http:/localhost:5000/chat", {
+      const response = await fetch("https://infinite-shelf-45363-1ce2df520b6f.herokuapp.com/chat", {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ messages: newThreadHistory }),
