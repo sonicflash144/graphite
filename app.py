@@ -4,6 +4,7 @@ from pydantic import BaseModel, Field
 from openai import OpenAI
 from dotenv import load_dotenv
 import os
+
 load_dotenv()
 api_key = os.getenv("OPENAI_API_KEY")
 client = OpenAI(api_key=api_key)
@@ -20,10 +21,8 @@ class Response(BaseModel):
     chat_text: str = Field(..., description="Conversational reply to the user's message, ex. 'Sure, I can help with that.'")
     comments: list[Comment]
 
-@app.route('/chat', methods=['POST', 'OPTIONS'])
+@app.route('/chat', methods=['POST'])
 def chat():
-    if request.method == 'OPTIONS':
-        return '', 204
     data = request.json
     messages = data.get('messages')
     for i, message in enumerate(messages):
