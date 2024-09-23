@@ -10,7 +10,7 @@ api_key = os.getenv("OPENAI_API_KEY")
 client = OpenAI(api_key=api_key)
 
 app = Flask(__name__)
-CORS(app, resources={r"/chat": {"origins": "https://gptforwriters.vercel.app"}})
+CORS(app)
 
 class Comment(BaseModel):
     anchor: str = Field(..., description="Must be verbatim and unique from the entire text")
@@ -58,5 +58,4 @@ def chat():
         return jsonify(response.parsed.dict()), 200
 
 if __name__ == '__main__':
-    port = int(os.environ.get('PORT', 5000))
-    app.run(host='0.0.0.0', port=port)
+    app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 5000)))
