@@ -34,9 +34,9 @@ function Suggestion({ suggestion, status, onHover, onLeave, onAccept, onDismiss,
 
   const { type, anchor, text } = suggestion;
   const { icon, title } = type === 'THREAD-STARTER' ? { icon: null, title: null } : suggestionTypeMap[type];
-  const greyStyle = { color: 'grey' };
-  const blackStyle = { color: 'black', fontWeight: 'bold' };
-  const italicStyle = { fontWeight: 'bold', fontStyle: 'italic' };
+  const greyStyle = { color: 'grey', wordBreak: 'break-word' };
+  const blackStyle = { color: 'black', fontWeight: 'bold', wordBreak: 'break-word' };
+  const italicStyle = { fontWeight: 'bold', fontStyle: 'italic', wordBreak: 'break-word' };
   const isAnchorPresent = editorContent.includes(suggestion.anchor);
 
   const renderSuggestionContent = () => {

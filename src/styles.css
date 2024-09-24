@@ -1,5 +1,6 @@
 body {
-    font-family: 'Roboto', sans-serif;
+    font-family: sans-serif;
+    box-sizing: border-box;
 }
 .chat-bubble {
     border-radius: 15px;
@@ -29,10 +30,10 @@ body {
     flex-direction: column;
     padding: 10px;
 }
-#chat-input, #thread-input {
+#chat-input {
     margin-top: auto;
     width: 100%;
-    padding: 10px;
+    padding: 8px;
     border: 1px solid #ccc;
     border-radius: 5px;
     resize: none;
@@ -56,4 +57,22 @@ body {
 }
 .no-select {
   user-select: none;
+}
+/* Default styles for .text-editor */
+.text-editor {
+    height: 100vh;
+}
+
+/* Styles for screens with a height of 600px or less */
+@media (max-height: 600px) {
+    .text-editor {
+        height: 95vh;
+    }
+}
+
+/* Styles for screens with a height of 400px or less */
+@media (max-height: 400px) {
+    .text-editor {
+        height: 90vh;
+    }
 }

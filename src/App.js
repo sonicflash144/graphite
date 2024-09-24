@@ -178,7 +178,7 @@ function App() {
   }
 
   return (
-    <div className="bg-gray-100 h-screen flex">
+    <div className="bg-gray-100 h-dvh flex">
       <Chat 
         editorContent={editorContent} 
         userPrompt={tags}

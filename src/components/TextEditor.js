@@ -4,6 +4,8 @@ import threadIcon from './icons/thread.svg';
 function TextEditor({ content, onContentChange, previewSuggestion, onOpenThread }) {
   const markRef = useRef(null);
   const editorRef = useRef(null);
+  const textareaRef = useRef(null);
+  const scrollPositionRef = useRef(0);
   const [selectedText, setSelectedText] = useState('');
   const [wordCount, setWordCount] = useState(0);
   const [charCount, setCharCount] = useState(0);
@@ -51,8 +53,8 @@ function TextEditor({ content, onContentChange, previewSuggestion, onOpenThread 
         <>
           {beforeAnchor}
           <mark
-            className="bg-[#D3E2FD] text-[#0957D0] p-1 rounded font-medium whitespace-pre-line"
             ref={markRef}
+            className="bg-[#D3E2FD] text-[#0957D0] p-1 rounded font-medium whitespace-pre-line"
           >
             {activeChange.text}
           </mark>
@@ -67,8 +69,8 @@ function TextEditor({ content, onContentChange, previewSuggestion, onOpenThread 
         <>
           {beforeAnchor}
           <mark
-            className="bg-[#D3E2FD] text-[#0957D0] p-1 rounded font-medium whitespace-pre-line"
             ref={markRef}
+            className="bg-[#D3E2FD] text-[#0957D0] p-1 rounded font-medium whitespace-pre-line"
           >
             {activeChange.text}
           </mark>
@@ -82,7 +84,10 @@ function TextEditor({ content, onContentChange, previewSuggestion, onOpenThread 
       return (
         <>
           {beforeAnchor}
-          <mark className="bg-[#ebebeb] p-1 rounded font-medium whitespace-pre-line" ref={markRef}>
+          <mark 
+            ref={markRef}
+            className="bg-[#ebebeb] p-1 rounded font-medium whitespace-pre-line" 
+          >
             <s className="text-[#A6A6A6] whitespace-pre-line">
               {activeChange.anchor}
             </s>
@@ -117,7 +122,10 @@ function TextEditor({ content, onContentChange, previewSuggestion, onOpenThread 
       return (
         <>
           {beforeAnchor}
-          <mark className="bg-[#D3E2FD] p-1 rounded font-medium whitespace-pre-line">
+          <mark
+            ref={markRef}
+            className="bg-[#D3E2FD] p-1 rounded font-medium whitespace-pre-line"
+          >
             {activeChange.anchor}
           </mark>
           {afterAnchor}
@@ -132,10 +140,19 @@ function TextEditor({ content, onContentChange, previewSuggestion, onOpenThread 
     if (markRef.current) {
       markRef.current.scrollIntoView();
     }
+    if (textareaRef.current) {
+      textareaRef.current.scrollTop = scrollPositionRef.current;
+    }
   }, [previewSuggestion]);
 
+  const handleScroll = () => {
+    if (textareaRef.current) {
+      scrollPositionRef.current = textareaRef.current.scrollTop;
+    }
+  };
+
   return (
-    <div className="relative w-1/2" ref={editorRef}>
+    <div className="relative text-editor w-1/2 shrink-0 py-2" ref={editorRef}>
       <div className="w-full h-[32px] mt-4 mb-2 flex justify-between items-center">
         <div className="p-4 text-sm text-gray-600 no-select">
           {wordCount} words, {charCount} chars
@@ -157,7 +174,13 @@ function TextEditor({ content, onContentChange, previewSuggestion, onOpenThread 
         <div className="h-[90%]">
           <textarea
             className="w-full h-full resize-none rounded-xl focus:outline-none p-5 px-7 transparent-scrollbar bg-transparent text-[18px]"
+            style={{
+              whiteSpace: 'pre-wrap',
+              wordWrap: 'break-word',
+            }}
+            ref={textareaRef}
             value={content}
+            onScroll={handleScroll}
             onChange={handleContentChange}
             placeholder="Start writing here..."
           />
