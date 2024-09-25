@@ -128,7 +128,7 @@ function Thread({ editorContent, userPrompt, suggestion, onClose, onSuggestionHo
           {msg.content.comments.length > 0 && (
             <div className="suggestions-container">
               {msg.content.comments
-                .filter(comment => ['REPLACE', 'ADD_BEFORE', 'ADD_AFTER', 'REMOVE', 'QUESTION'].includes(comment.type))
+                .filter(comment => ['REPLACE', 'ADD_BEFORE', 'ADD_AFTER', 'REMOVE', 'QUESTION', 'THREAD-STARTER'].includes(comment.type))
                 .map((comment) => {
                   const suggestionStatus = suggestionStatuses.find(s => s.id === comment.id)?.status || null;
                   return (
