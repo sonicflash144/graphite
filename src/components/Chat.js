@@ -118,23 +118,25 @@ function Chat({ editorContent, userPrompt, openSettings, clearStorage, onOpenThr
           {msg.content.chat_text ? <div className={`chat-bubble assistant-message`}>{msg.content.chat_text}</div> : null}
           {msg.content.comments.length > 0 && (
             <div className="suggestions-container">
-              {msg.content.comments.map((comment) => {
-                const suggestionStatus = suggestionStatuses.find(s => s.id === comment.id)?.status || null;
-                return (
-                  <Suggestion
-                    key={comment.id}
-                    suggestion={comment}
-                    status={suggestionStatus}
-                    onHover={onSuggestionHover}
-                    onLeave={onSuggestionLeave}
-                    onAccept={onApplySuggestion}
-                    onDismiss={onDismissSuggestion}
-                    onOpenThread={onOpenThread}
-                    isHovered={hoveredSuggestion === comment && hoveredSuggestion.id === comment.id}
-                    editorContent={editorContent}
-                    isThreadView={false}
-                  />
-                );
+              {msg.content.comments
+                .filter(comment => ['REPLACE', 'ADD_BEFORE', 'ADD_AFTER', 'REMOVE', 'QUESTION'].includes(comment.type))
+                .map((comment) => {
+                  const suggestionStatus = suggestionStatuses.find(s => s.id === comment.id)?.status || null;
+                  return (
+                    <Suggestion
+                      key={comment.id}
+                      suggestion={comment}
+                      status={suggestionStatus}
+                      onHover={onSuggestionHover}
+                      onLeave={onSuggestionLeave}
+                      onAccept={onApplySuggestion}
+                      onDismiss={onDismissSuggestion}
+                      onOpenThread={onOpenThread}
+                      isHovered={hoveredSuggestion === comment && hoveredSuggestion.id === comment.id}
+                      editorContent={editorContent}
+                      isThreadView={false}
+                    />
+                  );
               })}
             </div>
           )}
