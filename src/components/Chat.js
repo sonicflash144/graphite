@@ -78,7 +78,7 @@ function Chat({ editorContent, userPrompt, openSettings, clearStorage, onOpenThr
 
     localStorage.setItem('chatHistory', JSON.stringify(newChatHistory));
     try {
-      const response = await fetch("https://graphite-clone-5fd9ae1385f0.herokuapp.com/chat", {
+      const response = await fetch(process.env.HEROKU_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ messages: newChatHistory }),
