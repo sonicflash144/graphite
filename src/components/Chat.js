@@ -102,7 +102,6 @@ function Chat({ editorContent, userPrompt, openSettings, clearStorage, onOpenThr
       handleSendMessage();
     }
   };
-
   const clearChat = () => {
     setChatHistory(initialChatHistory(editorContent, JSON.stringify(userPrompt)));
     clearStorage();
