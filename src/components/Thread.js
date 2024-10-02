@@ -92,7 +92,7 @@ function Thread({ editorContent, userPrompt, suggestion, onClose, onSuggestionHo
     localStorage.setItem('threadHistory', JSON.stringify(newThreadHistory));
 
     try {
-      const response = await fetch(process.env.HEROKU_URL, {
+      const response = await fetch(process.env.NEXT_PUBLIC_HEROKU_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ messages: newThreadHistory }),
