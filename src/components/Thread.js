@@ -92,7 +92,7 @@ function Thread({ editorContent, userPrompt, suggestion, onClose, onSuggestionHo
     localStorage.setItem('threadHistory', JSON.stringify(newThreadHistory));
 
     try {
-      const response = await fetch(process.env.NEXT_PUBLIC_HEROKU_URL, {
+      const response = await fetch("https://graphite-clone-0785836f9ec8.herokuapp.com/chat", {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ messages: newThreadHistory }),
